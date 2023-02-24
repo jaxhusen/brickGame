@@ -9,7 +9,7 @@ let gameOverText;       // Game object for showing "You won the game!"
 let wonTheGameText;     // Flag will be used to define which direction the ball should rotate§
 
 let score = 0;          // Variable holding the number of scores
-let lives = 3;          // Variable holding the remaining lives
+let lives = 1;          // Variable holding the remaining lives
 
 
 // We are going to use these styles for texts
@@ -50,7 +50,7 @@ function preload() {
     this.load.image('paddle', 'uploads/colalogo.png'); 
     this.load.image('brick', 'uploads/cocacola.png');
     this.load.image('destroyed', 'uploads/explosion.png');
-/*     this.load.image('brick', 'uploads/brick.png');
+/*  this.load.image('brick', 'uploads/brick.png');
     this.load.image('destroyed', 'uploads/destroyed.png'); */
     this.load.image('ball', 'uploads/sphere.png');
 }
@@ -69,8 +69,11 @@ function create() {
         gridAlign: { width: 10, cellWidth: 60, cellHeight: 60, x: this.cameras.main.centerX - 277.5, y: 100 }
     });
 
+
     scoreText = this.add.text(20, 20, 'Score: 0', textStyle);
     livesText = this.add.text(this.game.config.width - 20, 20, 'Lives: ' + lives, textStyle).setOrigin(1, 0);
+    livesText.visible = false; // makes the content of livesText to be visible=false;
+
 
     gameOverText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 'Game over!', textStyle)
         .setOrigin(0.5)
@@ -90,7 +93,7 @@ function create() {
         .setStyle({ backgroundColor: '#111' })
         .setInteractive({ useHandCursor: true })
         .on('pointerdown', () => startGame.call(this))
-        .on('pointerover', () => startButton.setStyle({ fill: '#f39c12' }))
+        .on('pointerover', () => startButton.setStyle({ fill: '#FF0000' }))
         .on('pointerout', () => startButton.setStyle({ fill: '#FFF' }));
 
     

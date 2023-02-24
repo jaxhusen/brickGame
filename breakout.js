@@ -47,12 +47,12 @@ const game = new Phaser.Game(config);
 
 
 function preload() {
-    this.load.image('paddle', 'img/colalogo.png'); 
-    this.load.image('brick', 'img/cocacola.png');
-    this.load.image('destroyed', 'img/explosion.png');
-/*     this.load.image('brick', 'img/brick.png');
-    this.load.image('destroyed', 'img/destroyed.png'); */
-    this.load.image('ball', 'img/sphere.png');
+    this.load.image('paddle', 'uploads/colalogo.png'); 
+    this.load.image('brick', 'uploads/cocacola.png');
+    this.load.image('destroyed', 'uploads/explosion.png');
+/*     this.load.image('brick', 'uploads/brick.png');
+    this.load.image('destroyed', 'uploads/destroyed.png'); */
+    this.load.image('ball', 'uploads/sphere.png');
 }
 
 function create() {

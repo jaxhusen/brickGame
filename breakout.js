@@ -14,7 +14,7 @@ let lives = 1;          // Variable holding the remaining lives
 
 // We are going to use these styles for texts
 const textStyle = {
-    font: 'bold 18px Arial',
+    font: '18px Arial',
     fill: '#FFF'
 };
 
@@ -26,7 +26,7 @@ const config = {
     physics: {
         default: 'arcade',
         arcade: {
-           // debug: true, //- Set debug: true if you want collision boxes to be drawn
+            debug: true, //- Set debug: true if you want collision boxes to be drawn
             checkCollision: {
                 up: true,
                 down: false,

@@ -6,12 +6,20 @@ let livesText;          // Game object for showing lives
 let startButton;        // Game object for the start button
 let rotation;           // Game object for showing "Game Over!"
 let gameOverText;       // Game object for showing "You won the game!"
-let wonTheGameText;     // Flag will be used to define which direction the ball should rotate§
-let swipeDirection;
+let wonTheGameText;     // Flag will be used to define which direction the ball should rotate
+var pointsCount = 5;    //variable för points/ brick
+
+
+
 
 
 let score = 0;          // Variable holding the number of scores
 let lives = 1;          // Variable holding the remaining lives
+
+
+/* let restartScore = 0;   //variable to reset score when restart the game
+let restartLives = 1;   //variable to reset lives when restart the game */
+
 
 
 
@@ -23,14 +31,14 @@ const textStyle = {
 
 const config = {
     type: Phaser.AUTO,
-    width: window.innerWidth,
-    height: window.innerHeight,
     backgroundColor: '#222',
-    parent: 'brickGame',
-    scale:{
+    scale: {
         mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH, 
-    },  
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        parent: 'wrapper',
+        width: window.innerWidth,
+        height: window.innerHeight,
+    },
     physics: {
         default: 'arcade',
         arcade: {
@@ -51,24 +59,24 @@ const config = {
 };
 
 
+
+
 const game = new Phaser.Game(config);
-window.addEventListener('resize', () => {
-    game.resize(window.innerWidth, window.innerHeight);
-});
 
 
 
 function preload() {
-    this.load.image('paddle', 'uploads/colalogo.png'); 
+    this.load.image('paddle', 'uploads/colalogo.png');
     this.load.image('brick', 'uploads/cocacola.png');
     this.load.image('destroyed', 'uploads/explosion.png');
-/*  this.load.image('brick', 'uploads/brick.png');
-    this.load.image('destroyed', 'uploads/destroyed.png'); */
+    /*  this.load.image('brick', 'uploads/brick.png');
+        this.load.image('destroyed', 'uploads/destroyed.png'); */
     this.load.image('ball', 'uploads/sphere.png');
+
+
 }
 
 function create() {
-
 
     paddle = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - 50, 'paddle')
         .setImmovable();
@@ -79,29 +87,46 @@ function create() {
 
     bricks = this.physics.add.staticGroup({
         key: 'brick',
-        frameQuantity: 20,
-        gridAlign: { width: 10, cellWidth: 60, cellHeight: 60, x: this.cameras.main.centerX - 268, y: 100 }
+        frameQuantity: 10,
+        gridAlign: { width: 5, cellWidth: 60, cellHeight: 60, x: this.cameras.main.centerX - 120, y: 100 }
     });
 
 
     scoreText = this.add.text(20, 20, 'Score: 0', textStyle);
     livesText = this.add.text(this.game.config.width - 20, 20, 'Lives: ' + lives, textStyle).setOrigin(1, 0);
-    livesText.visible = false; // makes the content of livesText to be visible=false;
+    livesText.visible = true; // makes the content of livesText to be visible=false;
 
 
-    gameOverText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 'Game over!', textStyle)
-        .setOrigin(0.5)
-        .setPadding(10)
-        .setStyle({ backgroundColor: '#111', fill: '#e74c3c' })
-        .setVisible(false);
+    var cctitleId = 'cc-title';
+    var cctitle = document.getElementById(cctitleId);
 
-    wonTheGameText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 'You won the game!', textStyle)
-        .setOrigin(0.5)
-        .setPadding(10)
-        .setStyle({ backgroundColor: '#111', fill: '#27ae60' })
-        .setVisible(false);
+    /*             wonTheGameText = cctitle.innerText = 'You won the game!';
+                wonTheGameText.setVisible(false);  */
 
-    startButton = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 'Start game', textStyle)
+
+    function wonTheGameText() {
+        wonTheGameText = cctitle.innerText = 'You won the game!';
+        wonTheGameText.setVisible(true);
+    }
+
+
+
+
+    /*     gameOverText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 'Restart game', textStyle)
+            .setOrigin(0.5)
+            .setPadding(10)
+            .setStyle({ backgroundColor: '#111' })
+            .setInteractive({ useHandCursor: true })
+            .setVisible(false)  
+    
+            .on('pointerdown', () => this.scene.restart())
+            .on('pointerover', () => gameOverText.setStyle({ fill: '#FF0000' }))
+            .on('pointerout', () => gameOverText.setStyle({ fill: '#FFF' })); */
+
+
+
+    textfield = 'Start game';
+    startButton = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, textfield, textStyle)
         .setOrigin(0.5)
         .setPadding(10)
         .setStyle({ backgroundColor: '#111' })
@@ -110,12 +135,21 @@ function create() {
         .on('pointerover', () => startButton.setStyle({ fill: '#FF0000' }))
         .on('pointerout', () => startButton.setStyle({ fill: '#FFF' }));
 
-    
+
+
+
     this.physics.add.collider(ball, bricks, brickHit, null, this);
     this.physics.add.collider(ball, paddle, paddleHit, null, this);
 }
 
+
+
+
 function update() {
+    /*     if (startButton) {
+            this.scene.restart();
+        } */
+
     if (rotation) {
         ball.rotation = rotation === 'left' ? ball.rotation - .05 : ball.rotation + .05;
     }
@@ -123,15 +157,12 @@ function update() {
     if (ball.y > paddle.y) {
         lives--;
 
-        if (lives > 0) {
+        if (lives == 0) {
+
             livesText.setText(`Lives: ${lives}`);
+            startButton.setText('Restart game');
+            startButton.setVisible(true);
 
-            ball.setPosition(this.cameras.main.centerX, this.game.config.height - 100)
-                .setVelocity(300, -150);
-        } else {
-            ball.destroy();
-
-            gameOverText.setVisible(true);
         }
     }
 }
@@ -153,10 +184,12 @@ function paddleHit(ball, paddle) {
     }
 }
 
+
+
 function brickHit(ball, brick) {
     brick.setTexture('destroyed');
 
-    score += 5;
+    score += pointsCount;
     scoreText.setText(`Score: ${score}`);
 
     this.tweens.add({
@@ -171,17 +204,28 @@ function brickHit(ball, brick) {
             brick.destroy();
 
             if (bricks.countActive() === 0) {
-                ball.destroy();
+                ball.setVisible(false);
 
                 wonTheGameText.setVisible(true);
+            } else {
+                //restarta bricksen här
             }
         }
     });
 }
 
+
+
 function startGame() {
-    startButton.destroy();
-    ball.setVelocity(-300, -150);
+
+    score = 0;
+    lives = 1;
+
+    startButton.setVisible(false);
+
+    /* startButton.destroy(); */
+    ball.setVelocity(-300, -200);
+/*     ball = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - 100, 'ball'); */
     rotation = 'left';
 
     this.input.on('pointermove', pointer => {

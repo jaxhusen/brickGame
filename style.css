@@ -1,3 +1,24 @@
-#brickGame{
+#wrapper{
     background-color: #222;
+}
+
+#cc-title{
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    left: 40%;
+    color:white;
+    font-size:1.5rem;
+    text-align:center;
+    border-radius: 25px 25px 0 0;
+    padding-top: 5%;
+  }
+
+  canvas {
+    display: block;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }

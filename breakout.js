@@ -7,9 +7,12 @@ let startButton;        // Game object for the start button
 let rotation;           // Game object for showing "Game Over!"
 let gameOverText;       // Game object for showing "You won the game!"
 let wonTheGameText;     // Flag will be used to define which direction the ball should rotate§
+let swipeDirection;
+
 
 let score = 0;          // Variable holding the number of scores
 let lives = 1;          // Variable holding the remaining lives
+
 
 
 // We are going to use these styles for texts
@@ -23,10 +26,15 @@ const config = {
     width: window.innerWidth,
     height: window.innerHeight,
     backgroundColor: '#222',
+    parent: 'brickGame',
+    scale:{
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH, 
+    },  
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true, //- Set debug: true if you want collision boxes to be drawn
+            //debug: true, //- Set debug: true if you want collision boxes to be drawn
             checkCollision: {
                 up: true,
                 down: false,
@@ -44,6 +52,10 @@ const config = {
 
 
 const game = new Phaser.Game(config);
+window.addEventListener('resize', () => {
+    game.resize(window.innerWidth, window.innerHeight);
+});
+
 
 
 function preload() {
@@ -56,6 +68,8 @@ function preload() {
 }
 
 function create() {
+
+
     paddle = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - 50, 'paddle')
         .setImmovable();
 
@@ -66,7 +80,7 @@ function create() {
     bricks = this.physics.add.staticGroup({
         key: 'brick',
         frameQuantity: 20,
-        gridAlign: { width: 10, cellWidth: 60, cellHeight: 60, x: this.cameras.main.centerX - 277.5, y: 100 }
+        gridAlign: { width: 10, cellWidth: 60, cellHeight: 60, x: this.cameras.main.centerX - 268, y: 100 }
     });
 
 

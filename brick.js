@@ -12,8 +12,6 @@ var pointsCount = 5;    //variable för points/ brick
 
 var score = 0;          // Variable holding the number of scores
 var lives = 1;          // Variable holding the remaining lives
-
-
 const restartScore = 0;   //variable to reset score when restart the game
 const restartLives = 1;   //variable to reset lives when restart the game
 
@@ -59,15 +57,14 @@ const config = {
 
 
 let game = new Phaser.Game(config);
-
+var cctitleId = 'cc-title';
+var cctitle = document.getElementById(cctitleId);
 
 
 function preload() {
     this.load.image('paddle', 'uploads/colalogo.png');
     this.load.image('brick', 'uploads/cocacola.png');
     this.load.image('destroyed', 'uploads/explosion.png');
-    /*  this.load.image('brick', 'uploads/brick.png');
-        this.load.image('destroyed', 'uploads/destroyed.png'); */
     this.load.image('ball', 'uploads/sphere.png');
 }
 
@@ -81,41 +78,15 @@ function create() {
 
     bricks = this.physics.add.staticGroup({
         key: 'brick',
-        frameQuantity: 10,
-        gridAlign: { width: 5, cellWidth: 60, cellHeight: 60, x: this.cameras.main.centerX - 120, y: 100 }
+        frameQuantity: 1,
+        gridAlign: { width: 1, cellWidth: 60, cellHeight: 60, x: this.cameras.main.centerX - 120, y: 100 }
     });
 
 
     scoreText = this.add.text(20, 20, 'Score: 0', textStyle);
     livesText = this.add.text(this.game.config.width - 20, 20, 'Lives: ' + lives, textStyle).setOrigin(1, 0);
-    livesText.visible = true; // makes the content of livesText to be visible=false;
+    livesText.visible = false; // makes the content of livesText to be visible=false;
 
-
-    var cctitleId = 'cc-title';
-    var cctitle = document.getElementById(cctitleId);
-
-    /*  wonTheGameText = cctitle.innerText = 'You won the game!';
-        wonTheGameText.setVisible(false);  */
-
-
-    function wonTheGameText() {
-        wonTheGameText = cctitle.innerText = 'You won the game!';
-        wonTheGameText.setVisible(true);
-    }
-
-
-
-
-    /*     gameOverText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 'Restart game', textStyle)
-            .setOrigin(0.5)
-            .setPadding(10)
-            .setStyle({ backgroundColor: '#111' })
-            .setInteractive({ useHandCursor: true })
-            .setVisible(false)  
-    
-            .on('pointerdown', () => this.scene.restart())
-            .on('pointerover', () => gameOverText.setStyle({ fill: '#FF0000' }))
-            .on('pointerout', () => gameOverText.setStyle({ fill: '#FFF' })); */
 
 
 
@@ -129,11 +100,9 @@ function create() {
         .on('pointerover', () => startButton.setStyle({ fill: '#FF0000' }))
         .on('pointerout', () => startButton.setStyle({ fill: '#FFF' }));
 
-
     this.physics.add.collider(ball, bricks, brickHit, null, this);
     this.physics.add.collider(ball, paddle, paddleHit, null, this);
 }
-
 
 
 
@@ -147,63 +116,13 @@ function update() {
 
         if (lives === 0) {
             livesText.setText(`Lives: ${lives}`);   //update lives
-            
 
             startButton.setText('Restart game');    //sets text from 'start game' to 'restart game'
             startButton.setVisible(true);           //sets startbutton to visible
-            startButton.on ('pointerdown', (event) => { this.scene.restart (); });
-
-
-/*             
-            ball.destroy();                         //first ball destorys
-            paddle.destroy();
-            bricks.destroy();
-
-            //game = new Phaser.Game(config); 
-
-
-            ball = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - 100, 'ball')
-            paddle = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - 50, 'paddle')
-            bricks = this.physics.add.staticGroup({
-                key: 'brick',
-                frameQuantity: 10,
-                gridAlign: { width: 5, cellWidth: 60, cellHeight: 60, x: this.cameras.main.centerX - 120, y: 100 }
-            })  */
-
-            
-            console.log("lives = 0")
-            /* if (startButton === 'pointerdown') {
-                        console.log("clickatt poniterdown")
-                        
-                        ball.setVelocity(-300, -200);
-                        startGame();
-                    }  */
+            startButton.on('pointerdown', (event) => { this.scene.restart(); }); //restart game when lost
         }
     }
 }
-
-
-
-/* function gameOver() {
-
-    livesText.setText(`Lives: ${lives}`);   //update lives
-
-    startButton.setText('Restart game');    //sets text from 'start game' to 'restart game'
-    startButton.setVisible(true);           //sets startbutton to visible
-    ball.destroy();                         //first ball destorys
-    paddle.destroy();
-    bricks.destroy();
-
-    ball = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - 100, 'ball')
-    paddle = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - 50, 'paddle')
-    bricks = this.physics.add.staticGroup({
-        key: 'brick',
-        frameQuantity: 10,
-        gridAlign: { width: 5, cellWidth: 60, cellHeight: 60, x: this.cameras.main.centerX - 120, y: 100 }
-    })
-} */
-
-
 
 
 function paddleHit(ball, paddle) {
@@ -221,7 +140,6 @@ function paddleHit(ball, paddle) {
         ball.setVelocityX(2 + Math.random() * 10);
     };
 }
-
 
 
 function brickHit(ball, brick) {
@@ -243,7 +161,7 @@ function brickHit(ball, brick) {
 
             if (bricks.countActive() === 0) {
                 ball.setVisible(false);
-                wonTheGameText.setVisible(true);
+                wonTheGameText = cctitle.innerText = 'Congrats! You won the game!';
             }
         }
     });
@@ -252,19 +170,16 @@ function brickHit(ball, brick) {
 
 
 function startGame() {
-    console.log("startgame function")
     lives = restartLives;
     score = restartScore;
 
 
     livesText.setText(`Lives: ${lives}`);    //update lives
-    scoreText.setText(`Score: ${score}`);    //update score
+    scoreText.setText(`Score: ${score}`);    //update score 
 
     startButton.setVisible(false);
 
-
     ball.setVelocity(-300, -200);
-
     rotation = 'left';
 
     this.input.on('pointermove', pointer => {

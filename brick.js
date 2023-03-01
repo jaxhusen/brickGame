@@ -27,8 +27,6 @@ var brickPlacementY = 100;  //where on the screen should the group of bricks be 
 var paddlePlacement = 50; //where on the screen should the paddle be placed
 var ballPlacement = 100;  //where on the screen should the ball be placed
 
-
-
 // We are going to use these styles for texts
 const textStyle = {
     font: '18px Arial',

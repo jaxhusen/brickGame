@@ -13,12 +13,12 @@ var pointsCount = 5;    //variable för points/ brick
 
 
 
-let score = 0;          // Variable holding the number of scores
-let lives = 1;          // Variable holding the remaining lives
+var score = 0;          // Variable holding the number of scores
+var lives = 1;          // Variable holding the remaining lives
 
 
-/* let restartScore = 0;   //variable to reset score when restart the game
-let restartLives = 1;   //variable to reset lives when restart the game */
+const restartScore = 0;   //variable to reset score when restart the game
+const restartLives = 1;   //variable to reset lives when restart the game
 
 
 
@@ -72,12 +72,9 @@ function preload() {
     /*  this.load.image('brick', 'uploads/brick.png');
         this.load.image('destroyed', 'uploads/destroyed.png'); */
     this.load.image('ball', 'uploads/sphere.png');
-
-
 }
 
 function create() {
-
     paddle = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - 50, 'paddle')
         .setImmovable();
 
@@ -136,8 +133,6 @@ function create() {
         .on('pointerout', () => startButton.setStyle({ fill: '#FFF' }));
 
 
-
-
     this.physics.add.collider(ball, bricks, brickHit, null, this);
     this.physics.add.collider(ball, paddle, paddleHit, null, this);
 }
@@ -146,10 +141,6 @@ function create() {
 
 
 function update() {
-    /*     if (startButton) {
-            this.scene.restart();
-        } */
-
     if (rotation) {
         ball.rotation = rotation === 'left' ? ball.rotation - .05 : ball.rotation + .05;
     }
@@ -158,11 +149,29 @@ function update() {
         lives--;
 
         if (lives == 0) {
+            livesText.setText(`Lives: ${lives}`);   //update lives
 
-            livesText.setText(`Lives: ${lives}`);
-            startButton.setText('Restart game');
-            startButton.setVisible(true);
+            startButton.setText('Restart game');    //sets text from 'start game' to 'restart game'
+            startButton.setVisible(true);           //sets startbutton to visible
+            ball.destroy();                         //first ball destorys
+            paddle.destroy();
+            bricks.destroy();
+            ball = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - 100, 'ball')
+            paddle = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - 50, 'paddle')
+            bricks = this.physics.add.staticGroup({
+                key: 'brick',
+                frameQuantity: 10,
+                gridAlign: { width: 5, cellWidth: 60, cellHeight: 60, x: this.cameras.main.centerX - 120, y: 100 }
+            })
+            
+            console.log("lives = 0")
 
+            if (startButton === 'pointerdown') {
+                console.log("clickatt poniterdown")
+                
+                ball.setVelocity(-300, -200);
+                startGame();
+            } 
         }
     }
 }
@@ -181,7 +190,7 @@ function paddleHit(ball, paddle) {
         rotation = 'right';
     } else {
         ball.setVelocityX(2 + Math.random() * 10);
-    }
+    };
 }
 
 
@@ -205,10 +214,7 @@ function brickHit(ball, brick) {
 
             if (bricks.countActive() === 0) {
                 ball.setVisible(false);
-
                 wonTheGameText.setVisible(true);
-            } else {
-                //restarta bricksen här
             }
         }
     });
@@ -217,15 +223,19 @@ function brickHit(ball, brick) {
 
 
 function startGame() {
+    console.log("startgame function")
+    lives = restartLives;
+    score = restartScore;
 
-    score = 0;
-    lives = 1;
+
+    livesText.setText(`Lives: ${lives}`);    //update lives
+    scoreText.setText(`Score: ${score}`);    //update score
 
     startButton.setVisible(false);
 
-    /* startButton.destroy(); */
-    ball.setVelocity(-300, -200);
-/*     ball = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - 100, 'ball'); */
+
+    ball.setVelocity(-300, -200); 
+
     rotation = 'left';
 
     this.input.on('pointermove', pointer => {

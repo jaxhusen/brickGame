@@ -7,14 +7,25 @@ let startButton;        // Game object for the start button
 let rotation;           // Game object for showing "Game Over!"
 let gameOverText;       // Game object for showing "You won the game!"
 let wonTheGameText;     // Flag will be used to define which direction the ball should rotate
-var pointsCount = 5;    //variable för points/ brick
 
 
-var score = 0;          // Variable holding the number of scores
-var lives = 1;          // Variable holding the remaining lives
-const restartScore = 0;   //variable to reset score when restart the game
-const restartLives = 1;   //variable to reset lives when restart the game
+var pointsCount = 5;        //variable för points/ brick
+var score = 0;              // Variable holding the number of scores
+var lives = 1;              // Variable holding the remaining lives
+const restartScore = 0;     //variable to reset score when restart the game
+const restartLives = 1;     //variable to reset lives when restart the game
+var speedX = -300;
+var speedY =-200;
 
+var frameQuantity = 10;     //variable for how many bricks in the game
+var gridWidth = 5;          //variable for how many /row
+var brickWidth = 60;        //varible for how wide the bricks should be
+var brickHeight = 60;       //variable for how heigh the bricks should be
+var brickPlacementX = 120; //where on the screen should the group of bricks be placed in X
+var brickPlacementY = 100;  //where on the screen should the group of bricks be placed in Y
+
+var paddlePlacement = 50; //where on the screen should the paddle be placed
+var ballPlacement = 100;  //where on the screen should the ball be placed
 
 
 
@@ -54,8 +65,6 @@ const config = {
 };
 
 
-
-
 let game = new Phaser.Game(config);
 var cctitleId = 'cc-title';
 var cctitle = document.getElementById(cctitleId);
@@ -69,17 +78,17 @@ function preload() {
 }
 
 function create() {
-    paddle = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - 50, 'paddle')
+    paddle = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - paddlePlacement, 'paddle')
         .setImmovable();
 
-    ball = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - 100, 'ball')
+    ball = this.physics.add.image(this.cameras.main.centerX,  this.game.config.height - ballPlacement, 'ball')
         .setCollideWorldBounds(true)
         .setBounce(1);
 
     bricks = this.physics.add.staticGroup({
         key: 'brick',
-        frameQuantity: 1,
-        gridAlign: { width: 1, cellWidth: 60, cellHeight: 60, x: this.cameras.main.centerX - 120, y: 100 }
+        frameQuantity: frameQuantity,
+        gridAlign: { width: gridWidth, cellWidth: brickWidth, cellHeight: brickHeight, x: this.cameras.main.centerX - brickPlacementX, y: brickPlacementY }
     });
 
 
@@ -153,14 +162,15 @@ function brickHit(ball, brick) {
         scaleX: 0,
         scaleY: 0,
         ease: 'Power1',
-        duration: 500,
-        delay: 250,
+        duration: 300,
+        delay: 50,
         angle: 180,
         onComplete: () => {
             brick.destroy();
 
             if (bricks.countActive() === 0) {
-                ball.setVisible(false);
+                ball.setVelocity(0,0);
+                ball.setVisible(false); 
                 wonTheGameText = cctitle.innerText = 'Congrats! You won the game!';
             }
         }
@@ -179,7 +189,7 @@ function startGame() {
 
     startButton.setVisible(false);
 
-    ball.setVelocity(-300, -200);
+    ball.setVelocity(speedX, speedY);
     rotation = 'left';
 
     this.input.on('pointermove', pointer => {

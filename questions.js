@@ -1,4 +1,4 @@
-if($('#contest-game-type').val() == "bricks") {
+if($('#contest-game-type').val() == "brick") {
     questions.counter = $(container_selector + " .counter_box");
 
     var url = _baseURL + "/qgamestart/" + _view_key;

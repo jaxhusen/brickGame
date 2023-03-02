@@ -104,6 +104,7 @@ function create() {
         .setStyle({ backgroundColor: '#111' })
         .setInteractive({ useHandCursor: true })
         .on('pointerdown', () => startGame.call(this))
+        .on('touch', () => startGame.call(this))
         .on('pointerover', () => startButton.setStyle({ fill: '#FF0000' }))
         .on('pointerout', () => startButton.setStyle({ fill: '#FFF' }));
 
@@ -126,7 +127,8 @@ function update() {
 
             startButton.setText('Restart game');    //sets text from 'start game' to 'restart game'
             startButton.setVisible(true);           //sets startbutton to visible
-            startButton.on('pointerdown', (event) => { this.scene.restart(); }); //restart game when lost
+            startButton.on('pointerdown', (event) => { this.scene.restart(); }); //restart game when lost triggered by pointer down
+            startButton.on('touch', (event) => { this.scene.restart(); });       //restart game when lost triggered by touch on touch screens
         }
     }
 }
@@ -191,6 +193,9 @@ function startGame() {
     rotation = 'left';
 
     this.input.on('pointermove', pointer => {
+        paddle.x = Phaser.Math.Clamp(pointer.x, paddle.width / 2, this.game.config.width - paddle.width / 2);
+    });
+    this.input.on('touch', pointer => {
         paddle.x = Phaser.Math.Clamp(pointer.x, paddle.width / 2, this.game.config.width - paddle.width / 2);
     });
 }

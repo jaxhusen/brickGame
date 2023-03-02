@@ -8,24 +8,51 @@ let rotation;           // Game object for showing "Game Over!"
 let gameOverText;       // Game object for showing "You won the game!"
 let wonTheGameText;     // Flag will be used to define which direction the ball should rotate
 
-
-var pointsCount = 5;        //variable för points/ brick
+var cctitleId = 'cc-title';
+var cctitle = document.getElementById(cctitleId);
+var pointsCount = 5;        //variable for points/ brick
 var score = 0;              // Variable holding the number of scores
 var lives = 1;              // Variable holding the remaining lives
 const restartScore = 0;     //variable to reset score when restart the game
 const restartLives = 1;     //variable to reset lives when restart the game
-var speedX = -300;
-var speedY =-200;
 
+//variables for paddle
+var paddleWidth = 150;      //variable for paddle width
+var paddleHeight = 50;      //variable for paddle height
+var paddlePlacement = 50;   //where on the screen should the paddle be placed
+
+//variables for ball
+var speedX = -200;          //variable for speed of the ball in X
+var speedY = 400;           //variable for speed of the ball in Y
+var speedLeft = -7;         //variable for speef when you hit paddle on left side
+var speedRight = 7;         //variable for speef when you hit paddle on right side
+var ballPlacement = 120;    //where on the screen should the ball be placed
+var ballWidth = 40;         //variable for ball width
+var ballHeight = 40;        //variable for ball height
+
+//variables for bricks and grid
+var brickWidth = 50;        //variable for width of one brick
+var brickHeight = 50;         
 var frameQuantity = 10;     //variable for how many bricks in the game
-var gridWidth = 5;          //variable for how many /row
-var brickWidth = 60;        //varible for how wide the bricks should be
-var brickHeight = 60;       //variable for how heigh the bricks should be
-var brickPlacementX = 120; //where on the screen should the group of bricks be placed in X
+var gridWidthX = 5;         //variable for how many bricks /row
+var columnWidth = 70;       //varible for width on columns between bricks
+var rowHeight = 70;         //variable for height between rows
+var brickPlacementX = 120;  //where on the screen should the group of bricks be placed in X
 var brickPlacementY = 100;  //where on the screen should the group of bricks be placed in Y
 
-var paddlePlacement = 50; //where on the screen should the paddle be placed
-var ballPlacement = 100;  //where on the screen should the ball be placed
+//variables for bricks/explosion animation
+var brickDuration = 100;    //variable for the duration after hitting brick
+var brickDelay = 0;        //variable for the delay after hitting brick
+var brickAngle = 0;         //variable for angle of the effect after hitting brick
+var brickScaleY = 0;        //variable for scale effect Y after hitting brick
+var brickScaleX = 0;        //variable for scale effect X after hitting brick
+
+//variables for score and db
+var brickArr = [];          //save score and done
+var done;
+var game_type;
+var st;
+
 
 // We are going to use these styles for texts
 const textStyle = {
@@ -46,7 +73,7 @@ const config = {
     physics: {
         default: 'arcade',
         arcade: {
-            //debug: true, //- Set debug: true if you want collision boxes to be drawn
+            debug: true,              //debug: true, if you want bricks to be drawn
             checkCollision: {
                 up: true,
                 down: false,
@@ -64,29 +91,36 @@ const config = {
 
 
 let game = new Phaser.Game(config);
-var cctitleId = 'cc-title';
-var cctitle = document.getElementById(cctitleId);
 
 
-function preload() {
-    this.load.image('paddle', 'uploads/colalogo.png');
-    this.load.image('brick', 'uploads/cocacola.png');
-    this.load.image('destroyed', 'uploads/explosion.png');
-    this.load.image('ball', 'uploads/sphere.png');
+function preload(dataCards, _done, _game_type, /* _score, */ _st) {
+    game_type = _game_type;
+    done = _done;
+    st = _st;
+    //score = _score; 
+
+this.load.image('paddle', 'uploads/colalogodos.png', 'paddle');             //name, path, id
+this.load.image('brick', 'uploads/cocacola.png', 'brick');                  //name, path, id
+this.load.image('ball', 'uploads/sphere.png', 'ball');                      //name, path, id
+//this.load.image('destroyed', 'uploads/explosion.png', 'destroyed');       //name, path, id
+
 }
 
 function create() {
     paddle = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - paddlePlacement, 'paddle')
-        .setImmovable();
+        .setImmovable()
+        .setDisplaySize(paddleWidth, paddleHeight);
 
     ball = this.physics.add.image(this.cameras.main.centerX,  this.game.config.height - ballPlacement, 'ball')
         .setCollideWorldBounds(true)
-        .setBounce(1);
+        .setBounce(1)
+        .setDisplaySize(ballWidth, ballHeight);
+
 
     bricks = this.physics.add.staticGroup({
         key: 'brick',
         frameQuantity: frameQuantity,
-        gridAlign: { width: gridWidth, cellWidth: brickWidth, cellHeight: brickHeight, x: this.cameras.main.centerX - brickPlacementX, y: brickPlacementY }
+        gridAlign: { width: gridWidthX, cellWidth: columnWidth, cellHeight: rowHeight, x: this.cameras.main.centerX - brickPlacementX, y: brickPlacementY }
     });
 
 
@@ -139,11 +173,11 @@ function paddleHit(ball, paddle) {
 
     if (ball.x < paddle.x) {
         diff = paddle.x - ball.x;
-        ball.setVelocityX(-20 * diff);
+        ball.setVelocityX(speedLeft * diff);
         rotation = 'left';
     } else if (ball.x > paddle.x) {
         diff = ball.x - paddle.x;
-        ball.setVelocityX(20 * diff);
+        ball.setVelocityX(speedRight * diff);
         rotation = 'right';
     } else {
         ball.setVelocityX(2 + Math.random() * 10);
@@ -152,19 +186,19 @@ function paddleHit(ball, paddle) {
 
 
 function brickHit(ball, brick) {
-    brick.setTexture('destroyed');
+    /* brick.setTexture('destroyed'); */
 
     score += pointsCount;
     scoreText.setText(`Score: ${score}`);
 
     this.tweens.add({
         targets: brick,
-        scaleX: 0,
-        scaleY: 0,
+        scaleX: brickScaleX,
+        scaleY: brickScaleY,
         ease: 'Power1',
-        duration: 300,
-        delay: 50,
-        angle: 180,
+        duration: brickDuration,
+        delay: brickDelay,
+        angle: brickAngle,
         onComplete: () => {
             brick.destroy();
 
@@ -172,11 +206,15 @@ function brickHit(ball, brick) {
                 ball.setVelocity(0,0);
                 ball.setVisible(false); 
                 wonTheGameText = cctitle.innerText = 'Congrats! You won the game!';
+                brickArr.unshift(gameDone);
+                brickArr.unshift(score);
+                console.log(brickArr);
+                
+                gameDone();
             }
         }
     });
 }
-
 
 
 function startGame() {
@@ -199,3 +237,23 @@ function startGame() {
         paddle.x = Phaser.Math.Clamp(pointer.x, paddle.width / 2, this.game.config.width - paddle.width / 2);
     });
 }
+
+
+function gameDone(){
+    if (game_type == "contestBrick") {
+        done(game_type, encodeString((Date.now() - st).toString()));
+    } else if (game_type == "couponBrick") {
+        done("contestBrick", encodeString((Date.now() - st).toString()));
+    }
+}
+
+
+var encodeString = function (val/*:String*/) {
+    var res/*:String*/ = "";
+
+    for (var i/*:Number*/ = 0; i < val.length; i++) {
+        res += String.fromCharCode((val.charCodeAt(i) + 64));
+    }
+
+    return res;
+};

@@ -31,8 +31,8 @@ var ballWidth = 40;         //variable for ball width
 var ballHeight = 40;        //variable for ball height
 
 //variables for bricks and grid
-var brickWidth = 50;        //variable for width of one brick
-var brickHeight = 50;         
+/* var brickWidth = 50;        //variable for width of one brick
+var brickHeight = 50;       //variable for height of one brick */
 var frameQuantity = 10;     //variable for how many bricks in the game
 var gridWidthX = 5;         //variable for how many bricks /row
 var columnWidth = 70;       //varible for width on columns between bricks
@@ -99,7 +99,7 @@ function preload(dataCards, _done, _game_type, /* _score, */ _st) {
     st = _st;
     //score = _score; 
 
-this.load.image('paddle', 'uploads/colalogodos.png', 'paddle');             //name, path, id
+this.load.image('paddle', 'uploads/colalogo.png', 'paddle');             //name, path, id
 this.load.image('brick', 'uploads/cocacola.png', 'brick');                  //name, path, id
 this.load.image('ball', 'uploads/sphere.png', 'ball');                      //name, path, id
 //this.load.image('destroyed', 'uploads/explosion.png', 'destroyed');       //name, path, id

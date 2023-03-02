@@ -31,8 +31,6 @@ var ballWidth = 40;         //variable for ball width
 var ballHeight = 40;        //variable for ball height
 
 //variables for bricks and grid
-/* var brickWidth = 50;        //variable for width of one brick
-var brickHeight = 50;       //variable for height of one brick */
 var frameQuantity = 10;     //variable for how many bricks in the game
 var gridWidthX = 5;         //variable for how many bricks /row
 var columnWidth = 70;       //varible for width on columns between bricks
@@ -93,16 +91,16 @@ const config = {
 let game = new Phaser.Game(config);
 
 
-function preload(dataCards, _done, _game_type, /* _score, */ _st) {
+function preload(dataCards, _done, _game_type, _score, _st) {
     game_type = _game_type;
     done = _done;
     st = _st;
-    //score = _score; 
+    score = _score;
 
-this.load.image('paddle', 'uploads/colalogo.png', 'paddle');             //name, path, id
-this.load.image('brick', 'uploads/cocacola.png', 'brick');                  //name, path, id
-this.load.image('ball', 'uploads/sphere.png', 'ball');                      //name, path, id
-//this.load.image('destroyed', 'uploads/explosion.png', 'destroyed');       //name, path, id
+    this.load.image('paddle', 'uploads/colalogo.png', 'paddle');                //name, path, id
+    this.load.image('brick', 'uploads/cocacola.png', 'brick');                  //name, path, id
+    this.load.image('ball', 'uploads/sphere.png', 'ball');                      //name, path, id
+    //this.load.image('destroyed', 'uploads/explosion.png', 'destroyed');       //name, path, id
 
 }
 
@@ -111,7 +109,7 @@ function create() {
         .setImmovable()
         .setDisplaySize(paddleWidth, paddleHeight);
 
-    ball = this.physics.add.image(this.cameras.main.centerX,  this.game.config.height - ballPlacement, 'ball')
+    ball = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - ballPlacement, 'ball')
         .setCollideWorldBounds(true)
         .setBounce(1)
         .setDisplaySize(ballWidth, ballHeight);
@@ -158,7 +156,6 @@ function update() {
 
         if (lives === 0) {
             livesText.setText(`Lives: ${lives}`);   //update lives
-
             startButton.setText('Restart game');    //sets text from 'start game' to 'restart game'
             startButton.setVisible(true);           //sets startbutton to visible
             startButton.on('pointerdown', (event) => { this.scene.restart(); }); //restart game when lost triggered by pointer down
@@ -186,7 +183,7 @@ function paddleHit(ball, paddle) {
 
 
 function brickHit(ball, brick) {
-    /* brick.setTexture('destroyed'); */
+    // brick.setTexture('destroyed');  //switch from brick to destroyed after hit
 
     score += pointsCount;
     scoreText.setText(`Score: ${score}`);
@@ -203,13 +200,13 @@ function brickHit(ball, brick) {
             brick.destroy();
 
             if (bricks.countActive() === 0) {
-                ball.setVelocity(0,0);
-                ball.setVisible(false); 
+                ball.setVelocity(0, 0);
+                ball.setVisible(false);
                 wonTheGameText = cctitle.innerText = 'Congrats! You won the game!';
                 brickArr.unshift(gameDone);
                 brickArr.unshift(score);
                 console.log(brickArr);
-                
+
                 gameDone();
             }
         }
@@ -239,7 +236,7 @@ function startGame() {
 }
 
 
-function gameDone(){
+function gameDone() {
     if (game_type == "contestBrick") {
         done(game_type, encodeString((Date.now() - st).toString()));
     } else if (game_type == "couponBrick") {

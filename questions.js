@@ -1,4 +1,4 @@
-if($('#contest-game-type').val() == "brick") {
+if($('#contest-game-type').val() == "bricks") {
     questions.counter = $(container_selector + " .counter_box");
 
     var url = _baseURL + "/qgamestart/" + _view_key;
@@ -13,23 +13,23 @@ if($('#contest-game-type').val() == "brick") {
         }
 
         _ready();
-        juggle(brickArr, done, "contestBrick", $('#contest-game-level').val(), _st);
+        preload(brickArr, done, "contestBrick", $('#contest-game-level').val(), _st);
         console.log('response',response);
         if (response == "OK") {
-            /* console.log("data ", document.getElementById('paddle')); */
+            // console.log("data ", document.getElementById('paddle')); 
             questions.counter.reset();
             var image1 = document.getElementById('paddle').innerText;
             var image2 = document.getElementById('brick').innerText;
             var image3 = document.getElementById('ball').innerText;
-/*             var image4 = document.getElementById('destroyed').innerText; */
+            // var image4 = document.getElementById('destroyed').innerText;
 
             
             var brickArr = [];
             brickArr.push(
                 {background_image: image1, type: 1, index: null}, {background_image: image1, type: 1, index: null},
                 {background_image: image2, type: 1, index: null}, {background_image: image2, type: 1, index: null},
-                {background_image: image3, type: 1, index: null}, {background_image: image3, type: 1, index: null};
-/*                 {background_image: image4, type: 1, index: null}, {background_image: image4, type: 1, index: null}); */
+                {background_image: image3, type: 1, index: null}, {background_image: image3, type: 1, index: null});
+                //{background_image: image4, type: 1, index: null}, {background_image: image4, type: 1, index: null});
 
             _st = Date.now();
         }    

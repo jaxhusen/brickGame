@@ -4,12 +4,13 @@ let bricks;             // Game object for the bricks
 let scoreText;          // Game object for showing score
 let livesText;          // Game object for showing lives
 let startButton;        // Game object for the start button
-let rotation;           // Game object for showing "Game Over!"
-let gameOverText;       // Game object for showing "You won the game!"
-let wonTheGameText;     // Flag will be used to define which direction the ball should rotate
+let gameOverText;       // Game object for showing "Game Over!"
+let wonTheGameText;     // Game object for showing "You won the game!"
+let rotation;           // Flag will be used to define which direction the ball should rotate
 
 var cctitleId = 'cc-title';
 var cctitle = document.getElementById(cctitleId);
+
 var pointsCount = 5;        //variable for points/ brick
 var score = 0;              // Variable holding the number of scores
 var lives = 1;              // Variable holding the remaining lives
@@ -24,8 +25,8 @@ var paddlePlacement = 50;   //where on the screen should the paddle be placed
 //variables for ball
 var speedX = -200;          //variable for speed of the ball in X
 var speedY = 400;           //variable for speed of the ball in Y
-var speedLeft = -7;         //variable for speef when you hit paddle on left side
-var speedRight = 7;         //variable for speef when you hit paddle on right side
+var speedLeft = -7;         //variable for speed when you hit paddle on left side
+var speedRight = 7;         //variable for speed when you hit paddle on right side
 var ballPlacement = 120;    //where on the screen should the ball be placed
 var ballWidth = 40;         //variable for ball width
 var ballHeight = 40;        //variable for ball height
@@ -40,13 +41,13 @@ var brickPlacementY = 100;  //where on the screen should the group of bricks be 
 
 //variables for bricks/explosion animation
 var brickDuration = 100;    //variable for the duration after hitting brick
-var brickDelay = 0;        //variable for the delay after hitting brick
+var brickDelay = 0;         //variable for the delay after hitting brick
 var brickAngle = 0;         //variable for angle of the effect after hitting brick
 var brickScaleY = 0;        //variable for scale effect Y after hitting brick
 var brickScaleX = 0;        //variable for scale effect X after hitting brick
 
-//variables for score and db
-var brickArr = [];          //save score and done
+//variables for array and db
+var brickArr = [];          //save score and gameDone()
 var done;
 var game_type;
 var st;
@@ -71,7 +72,7 @@ const config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true,              //debug: true, if you want bricks to be drawn
+            //debug: true,              //debug: true, if you want bricks to be drawn
             checkCollision: {
                 up: true,
                 down: false,
@@ -159,7 +160,7 @@ function update() {
             startButton.setText('Restart game');    //sets text from 'start game' to 'restart game'
             startButton.setVisible(true);           //sets startbutton to visible
             startButton.on('pointerdown', (event) => { this.scene.restart(); }); //restart game when lost triggered by pointer down
-            startButton.on('touch', (event) => { this.scene.restart(); });       //restart game when lost triggered by touch on touch screens
+            startButton.on('touch', (event) => { this.scene.restart(); });       //restart game when lost triggered by touch 
         }
     }
 }
@@ -217,7 +218,6 @@ function brickHit(ball, brick) {
 function startGame() {
     lives = restartLives;
     score = restartScore;
-
 
     livesText.setText(`Lives: ${lives}`);    //update lives
     scoreText.setText(`Score: ${score}`);    //update score 

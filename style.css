@@ -1,16 +1,14 @@
-canvas {
-  border: 1px solid black;
-  border-radius: 3%;
-
+* {
+  margin: 0; overflow: hidden;
 }
 
-/* #cc-title {
-  position: absolute;
-  z-index: 100;
-  top: -2%;
-  left: 30%;
-  color: black;
-  font-size: 1.5rem;
-  text-align: center;
-  margin: 4% 0;
-} */
+canvas {
+margin-left: 0!important;
+margin-top: 0!important;
+background:transparent;
+}
+
+#wrapper{
+  /* background-color: green; */
+}
+

@@ -13,7 +13,7 @@ if($('#contest-game-type').val() == "brick") {
         }
 
         _ready();
-        preload(brickArr, done, "contestBrick", $('#contest-game-level').val(), _st);
+        preload(brickArr, done, "contestBrick", /* $('#contest-game-level').val(), */ _st, _paddleWidth, _brickQuantity, _pointsCount);
         console.log('response',response);
         if (response == "OK") {
             // console.log("data ", document.getElementById('paddle')); 

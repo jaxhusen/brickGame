@@ -32,12 +32,14 @@ var ballWidth = 40;         //variable for ball width
 var ballHeight = 40;        //variable for ball height
 
 //variables for bricks and grid
-var frameQuantity = 10;     //variable for how many bricks in the game
-var gridWidthX = 5;         //variable for how many bricks /row
-var columnWidth = 70;       //varible for width on columns between bricks
-var rowHeight = 70;         //variable for height between rows
-var brickPlacementX = 120;  //where on the screen should the group of bricks be placed in X
-var brickPlacementY = 100;  //where on the screen should the group of bricks be placed in Y
+var brickQuantity = 24;     //variable for total bricks in the game
+var bricksPerRow = 6;         //variable for how many bricks /row
+
+var columnWidth = 50;       //varible for width on columns between bricks
+var rowHeight = 60;         //variable for height between rows
+var brickPlacementX;    //where on the screen should the group of bricks be placed in X
+var brickPlacementY = 50;  //where on the screen should the group of bricks be placed in Y
+
 
 //variables for bricks/explosion animation
 var brickDuration = 100;    //variable for the duration after hitting brick
@@ -45,6 +47,7 @@ var brickDelay = 0;         //variable for the delay after hitting brick
 var brickAngle = 0;         //variable for angle of the effect after hitting brick
 var brickScaleY = 0;        //variable for scale effect Y after hitting brick
 var brickScaleX = 0;        //variable for scale effect X after hitting brick
+ 
 
 //variables for array and db
 var brickArr = [];          //save score and gameDone()
@@ -59,15 +62,21 @@ const textStyle = {
     fill: '#FFF'
 };
 
+
+
 const config = {
     type: Phaser.AUTO,
     backgroundColor: '#222',
+    parent: 'wrapper',
+    width: window.innerWidth,
+    height: window.innerHeight,
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        parent: 'wrapper',
-        width: window.innerWidth,
-        height: window.innerHeight,
+        minWidth: 300,
+        minHeight: 400,
+        maxWidth: 900,
+        maxHeight: 1000,
     },
     physics: {
         default: 'arcade',
@@ -88,22 +97,24 @@ const config = {
     }
 };
 
-
 let game = new Phaser.Game(config);
 
-
-function preload(dataCards, _done, _game_type, _score, _st) {
-    game_type = _game_type;
+function preload(dataCards, _done, _game_type, /* _score, */ _st, _paddleWidth, _brickQuantity, _pointsCount) {
+    //add speed of ball in ONE var for difficulty
     done = _done;
+    game_type = _game_type;
+    /*  score = _score; */
     st = _st;
-    score = _score;
+    /*      paddleWidth = _paddleWidth;
+            brickQuantity = _brickQuantity;
+            pointsCount = _pointsCount */
 
     this.load.image('paddle', 'uploads/colalogo.png', 'paddle');                //name, path, id
     this.load.image('brick', 'uploads/cocacola.png', 'brick');                  //name, path, id
     this.load.image('ball', 'uploads/sphere.png', 'ball');                      //name, path, id
     //this.load.image('destroyed', 'uploads/explosion.png', 'destroyed');       //name, path, id
-
 }
+
 
 function create() {
     paddle = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - paddlePlacement, 'paddle')
@@ -115,19 +126,22 @@ function create() {
         .setBounce(1)
         .setDisplaySize(ballWidth, ballHeight);
 
-
     bricks = this.physics.add.staticGroup({
         key: 'brick',
-        frameQuantity: frameQuantity,
-        gridAlign: { width: gridWidthX, cellWidth: columnWidth, cellHeight: rowHeight, x: this.cameras.main.centerX - brickPlacementX, y: brickPlacementY }
+        frameQuantity: brickQuantity,
+        gridAlign: {
+            width: bricksPerRow,
+            cellWidth: columnWidth,
+            cellHeight: rowHeight,
+            x: this.cameras.main.centerX - 120,
+            y: brickPlacementY,
+        }
     });
 
 
-    scoreText = this.add.text(20, 20, 'Score: 0', textStyle);
+    scoreText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, '0', textStyle);
     livesText = this.add.text(this.game.config.width - 20, 20, 'Lives: ' + lives, textStyle).setOrigin(1, 0);
     livesText.visible = false; // makes the content of livesText to be visible=false;
-
-
 
 
     textfield = 'Start game';
@@ -187,7 +201,7 @@ function brickHit(ball, brick) {
     // brick.setTexture('destroyed');  //switch from brick to destroyed after hit
 
     score += pointsCount;
-    scoreText.setText(`Score: ${score}`);
+    scoreText.setText(`${score}`);
 
     this.tweens.add({
         targets: brick,
@@ -220,7 +234,7 @@ function startGame() {
     score = restartScore;
 
     livesText.setText(`Lives: ${lives}`);    //update lives
-    scoreText.setText(`Score: ${score}`);    //update score 
+    scoreText.setText(`${score}`);    //update score 
 
     startButton.setVisible(false);
 
@@ -245,7 +259,7 @@ function gameDone() {
 }
 
 
-var encodeString = function (val/*:String*/) {
+var encodeString = function(val/*:String*/) {
     var res/*:String*/ = "";
 
     for (var i/*:Number*/ = 0; i < val.length; i++) {

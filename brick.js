@@ -1,6 +1,13 @@
+window.addEventListener('resize', () => {
+    window.location.reload()
+}); //update size of game depending on size of screen
+
 let ball;               // Game object for the ball
 let paddle;             // Game object for the paddle
 let bricks;             // Game object for the bricks
+let sprite;
+
+
 let scoreText;          // Game object for showing score
 let livesText;          // Game object for showing lives
 let startButton;        // Game object for the start button
@@ -23,8 +30,7 @@ var paddleHeight = 50;      //variable for paddle height
 var paddlePlacement = 50;   //where on the screen should the paddle be placed
 
 //variables for ball
-var speedX = -200;          //variable for speed of the ball in X
-var speedY = 400;           //variable for speed of the ball in Y
+var speedBall = 300;          //variable for speed of the ball 
 var speedLeft = -7;         //variable for speed when you hit paddle on left side
 var speedRight = 7;         //variable for speed when you hit paddle on right side
 var ballPlacement = 120;    //where on the screen should the ball be placed
@@ -37,7 +43,7 @@ var bricksPerRow = 6;         //variable for how many bricks /row
 
 var columnWidth = 50;       //varible for width on columns between bricks
 var rowHeight = 60;         //variable for height between rows
-var brickPlacementX;    //where on the screen should the group of bricks be placed in X
+var brickPlacementX = 120;    //where on the screen should the group of bricks be placed in X
 var brickPlacementY = 50;  //where on the screen should the group of bricks be placed in Y
 
 
@@ -47,7 +53,7 @@ var brickDelay = 0;         //variable for the delay after hitting brick
 var brickAngle = 0;         //variable for angle of the effect after hitting brick
 var brickScaleY = 0;        //variable for scale effect Y after hitting brick
 var brickScaleX = 0;        //variable for scale effect X after hitting brick
- 
+
 
 //variables for array and db
 var brickArr = [];          //save score and gameDone()
@@ -99,15 +105,16 @@ const config = {
 
 let game = new Phaser.Game(config);
 
-function preload(dataCards, _done, _game_type, /* _score, */ _st, _paddleWidth, _brickQuantity, _pointsCount) {
-    //add speed of ball in ONE var for difficulty
+function preload(dataCards, _done, _game_type, /* _score, */ _st, _paddleWidth, _brickQuantity, _pointsCount, /* _speedBall */) {
+
     done = _done;
     game_type = _game_type;
     /*  score = _score; */
     st = _st;
     /*      paddleWidth = _paddleWidth;
             brickQuantity = _brickQuantity;
-            pointsCount = _pointsCount */
+            pointsCount = _pointsCount;
+            speedBall = _speedBall*/
 
     this.load.image('paddle', 'uploads/colalogo.png', 'paddle');                //name, path, id
     this.load.image('brick', 'uploads/cocacola.png', 'brick');                  //name, path, id
@@ -133,10 +140,12 @@ function create() {
             width: bricksPerRow,
             cellWidth: columnWidth,
             cellHeight: rowHeight,
-            x: this.cameras.main.centerX - 120,
+            x: this.cameras.main.centerX - brickPlacementX,
             y: brickPlacementY,
-        }
+        },
+        //setScale: { x: 1.5, y: 1 }
     });
+
 
 
     scoreText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, '0', textStyle);
@@ -170,7 +179,7 @@ function update() {
         lives--;
 
         if (lives === 0) {
-            livesText.setText(`Lives: ${lives}`);   //update lives
+            //livesText.setText(`Lives: ${lives}`);   //update lives
             startButton.setText('Restart game');    //sets text from 'start game' to 'restart game'
             startButton.setVisible(true);           //sets startbutton to visible
             startButton.on('pointerdown', (event) => { this.scene.restart(); }); //restart game when lost triggered by pointer down
@@ -178,6 +187,9 @@ function update() {
         }
     }
 }
+
+
+
 
 
 function paddleHit(ball, paddle) {
@@ -233,12 +245,12 @@ function startGame() {
     lives = restartLives;
     score = restartScore;
 
-    livesText.setText(`Lives: ${lives}`);    //update lives
+    //livesText.setText(`Lives: ${lives}`);    //update lives
     scoreText.setText(`${score}`);    //update score 
 
     startButton.setVisible(false);
 
-    ball.setVelocity(speedX, speedY);
+    ball.setVelocity(speedBall);
     rotation = 'left';
 
     this.input.on('pointermove', pointer => {
@@ -259,7 +271,7 @@ function gameDone() {
 }
 
 
-var encodeString = function(val/*:String*/) {
+var encodeString = function (val/*:String*/) {
     var res/*:String*/ = "";
 
     for (var i/*:Number*/ = 0; i < val.length; i++) {

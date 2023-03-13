@@ -7,7 +7,6 @@ let paddle;             // Game object for the paddle
 let bricks;             // Game object for the bricks
 let sprite;
 
-
 let scoreText;          // Game object for showing score
 let livesText;          // Game object for showing lives
 let startButton;        // Game object for the start button
@@ -27,7 +26,7 @@ const restartLives = 1;     //variable to reset lives when restart the game
 //variables for paddle
 var paddleWidth = 150;      //variable for paddle width
 var paddleHeight = 50;      //variable for paddle height
-var paddlePlacement = 50;   //where on the screen should the paddle be placed
+var paddlePlacement = 70;   //where on the screen should the paddle be placed
 
 //variables for ball
 var speedBall = 300;          //variable for speed of the ball 
@@ -38,13 +37,8 @@ var ballWidth = 40;         //variable for ball width
 var ballHeight = 40;        //variable for ball height
 
 //variables for bricks and grid
-var brickQuantity = 24;     //variable for total bricks in the game
-var bricksPerRow = 6;         //variable for how many bricks /row
-
-var columnWidth = 50;       //varible for width on columns between bricks
-var rowHeight = 60;         //variable for height between rows
-var brickPlacementX = 120;    //where on the screen should the group of bricks be placed in X
-var brickPlacementY = 50;  //where on the screen should the group of bricks be placed in Y
+var brickQuantity = 20;     //variable for total bricks in the game
+var bricksPerRow = 5;         //variable for how many bricks /row
 
 
 //variables for bricks/explosion animation
@@ -77,11 +71,11 @@ const config = {
     width: window.innerWidth,
     height: window.innerHeight,
     scale: {
-        mode: Phaser.Scale.FIT,
+        mode: Phaser.Scale.ENVELOP,
         autoCenter: Phaser.Scale.CENTER_BOTH,
         minWidth: 300,
         minHeight: 400,
-        maxWidth: 900,
+        maxWidth: 800,
         maxHeight: 1000,
     },
     physics: {
@@ -105,6 +99,7 @@ const config = {
 
 let game = new Phaser.Game(config);
 
+
 function preload(dataCards, _done, _game_type, /* _score, */ _st, _paddleWidth, _brickQuantity, _pointsCount, /* _speedBall */) {
 
     done = _done;
@@ -124,6 +119,15 @@ function preload(dataCards, _done, _game_type, /* _score, */ _st, _paddleWidth, 
 
 
 function create() {
+    var scaleManager = this.game.scale;
+    var windowWidth = scaleManager.width;
+
+    var columnWidth = windowWidth / bricksPerRow;       //varible for width on columns between bricks
+    var rowHeight = columnWidth /1.5;         //variable for height between rows
+    var gridX = windowWidth - (columnWidth * bricksPerRow / 1.15);
+    var gridY = 50;
+
+
     paddle = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - paddlePlacement, 'paddle')
         .setImmovable()
         .setDisplaySize(paddleWidth, paddleHeight);
@@ -133,6 +137,7 @@ function create() {
         .setBounce(1)
         .setDisplaySize(ballWidth, ballHeight);
 
+
     bricks = this.physics.add.staticGroup({
         key: 'brick',
         frameQuantity: brickQuantity,
@@ -140,12 +145,11 @@ function create() {
             width: bricksPerRow,
             cellWidth: columnWidth,
             cellHeight: rowHeight,
-            x: this.cameras.main.centerX - brickPlacementX,
-            y: brickPlacementY,
+            x: gridX,
+            y: gridY,
         },
-        //setScale: { x: 1.5, y: 1 }
     });
-
+    console.log(gridX)
 
 
     scoreText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, '0', textStyle);
@@ -187,7 +191,6 @@ function update() {
         }
     }
 }
-
 
 
 

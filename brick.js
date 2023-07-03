@@ -20,25 +20,28 @@ var cctitle = document.getElementById(cctitleId);
 var pointsCount = 5;        //variable for points/ brick
 var score = 0;              // Variable holding the number of scores
 var lives = 1;              // Variable holding the remaining lives
-const restartScore = 0;     //variable to reset score when restart the game
-const restartLives = 1;     //variable to reset lives when restart the game
+const restartScore = score;     //variable to reset score when restart the game
+const restartLives = lives;     //variable to reset lives when restart the game
+
 
 //variables for paddle
 var paddleWidth = 150;      //variable for paddle width
 var paddleHeight = 50;      //variable for paddle height
 var paddlePlacement = 70;   //where on the screen should the paddle be placed
 
+
 //variables for ball
-var speedBall = 300;          //variable for speed of the ball 
+var speedBall = 300;        //variable for speed of the ball 
 var speedLeft = -7;         //variable for speed when you hit paddle on left side
 var speedRight = 7;         //variable for speed when you hit paddle on right side
 var ballPlacement = 120;    //where on the screen should the ball be placed
 var ballWidth = 40;         //variable for ball width
 var ballHeight = 40;        //variable for ball height
 
+
 //variables for bricks and grid
-var brickQuantity = 20;     //variable for total bricks in the game
-var bricksPerRow = 5;         //variable for how many bricks /row
+var brickQuantity = 36;     //variable for total bricks in the game
+var bricksPerRow = 12;       //variable for how many bricks /row
 
 
 //variables for bricks/explosion animation
@@ -66,7 +69,6 @@ const textStyle = {
 
 const config = {
     type: Phaser.AUTO,
-    backgroundColor: '#222',
     parent: 'wrapper',
     width: window.innerWidth,
     height: window.innerHeight,
@@ -111,9 +113,10 @@ function preload(dataCards, _done, _game_type, /* _score, */ _st, _paddleWidth, 
             pointsCount = _pointsCount;
             speedBall = _speedBall*/
 
-    this.load.image('paddle', 'uploads/colalogo.png', 'paddle');                //name, path, id
-    this.load.image('brick', 'uploads/cocacola.png', 'brick');                  //name, path, id
-    this.load.image('ball', 'uploads/sphere.png', 'ball');                      //name, path, id
+    this.load.image('background', 'uploads/arbackground.png');
+    this.load.image('paddle', 'uploads/arlogo.png', 'paddle');                //name, path, id
+    this.load.image('brick', 'uploads/ar.png', 'brick');                  //name, path, id
+    this.load.image('ball', 'uploads/tennisboll.png', 'ball');                      //name, path, id
     //this.load.image('destroyed', 'uploads/explosion.png', 'destroyed');       //name, path, id
 }
 
@@ -123,11 +126,14 @@ function create() {
     var windowWidth = scaleManager.width;
 
     var columnWidth = windowWidth / bricksPerRow;       //varible for width on columns between bricks
-    var rowHeight = columnWidth /1.5;         //variable for height between rows
-    var gridX = windowWidth - (columnWidth * bricksPerRow / 1.15);
-    var gridY = 50;
+    var rowHeight = columnWidth / 1;         //variable for height between rows
+    var gridX = windowWidth - (columnWidth * bricksPerRow / 1);
+    var gridY = 80;
 
-
+    this.add.image(0, 0, 'background')
+        .setOrigin(0) // Set origin to top left corner
+        .setDisplaySize(this.game.config.width, this.game.config.height); // Set size to match the screen dimensions
+    
     paddle = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - paddlePlacement, 'paddle')
         .setImmovable()
         .setDisplaySize(paddleWidth, paddleHeight);
@@ -135,8 +141,8 @@ function create() {
     ball = this.physics.add.image(this.cameras.main.centerX, this.game.config.height - ballPlacement, 'ball')
         .setCollideWorldBounds(true)
         .setBounce(1)
-        .setDisplaySize(ballWidth, ballHeight);
-
+        .setDisplaySize(ballWidth, ballHeight)
+        .setDepth(1);
 
     bricks = this.physics.add.staticGroup({
         key: 'brick',
@@ -161,11 +167,16 @@ function create() {
     startButton = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, textfield, textStyle)
         .setOrigin(0.5)
         .setPadding(10)
-        .setStyle({ backgroundColor: '#111' })
+        .setStyle({ 
+            backgroundColor: '#FFB81C',
+            fill: '#FFF',
+            fontSize: '24px',
+            fontWeight: 'bold'
+        })
         .setInteractive({ useHandCursor: true })
         .on('pointerdown', () => startGame.call(this))
         .on('touch', () => startGame.call(this))
-        .on('pointerover', () => startButton.setStyle({ fill: '#FF0000' }))
+        .on('pointerover', () => startButton.setStyle({ fill: '#5C7082' }))
         .on('pointerout', () => startButton.setStyle({ fill: '#FFF' }));
 
     this.physics.add.collider(ball, bricks, brickHit, null, this);
@@ -183,7 +194,7 @@ function update() {
         lives--;
 
         if (lives === 0) {
-            //livesText.setText(`Lives: ${lives}`);   //update lives
+            livesText.setText(`Lives: ${lives}`);   //update lives
             startButton.setText('Restart game');    //sets text from 'start game' to 'restart game'
             startButton.setVisible(true);           //sets startbutton to visible
             startButton.on('pointerdown', (event) => { this.scene.restart(); }); //restart game when lost triggered by pointer down
@@ -237,7 +248,6 @@ function brickHit(ball, brick) {
                 brickArr.unshift(score);
                 console.log(brickArr);
 
-                gameDone();
             }
         }
     });
@@ -249,7 +259,7 @@ function startGame() {
     score = restartScore;
 
     //livesText.setText(`Lives: ${lives}`);    //update lives
-    scoreText.setText(`${score}`);    //update score 
+    scoreText.setText(`${score}`);             //update score 
 
     startButton.setVisible(false);
 
@@ -259,27 +269,10 @@ function startGame() {
     this.input.on('pointermove', pointer => {
         paddle.x = Phaser.Math.Clamp(pointer.x, paddle.width / 2, this.game.config.width - paddle.width / 2);
     });
+    
     this.input.on('touch', pointer => {
         paddle.x = Phaser.Math.Clamp(pointer.x, paddle.width / 2, this.game.config.width - paddle.width / 2);
     });
 }
 
 
-function gameDone() {
-    if (game_type == "contestBrick") {
-        done(game_type, encodeString((Date.now() - st).toString()));
-    } else if (game_type == "couponBrick") {
-        done("contestBrick", encodeString((Date.now() - st).toString()));
-    }
-}
-
-
-var encodeString = function (val/*:String*/) {
-    var res/*:String*/ = "";
-
-    for (var i/*:Number*/ = 0; i < val.length; i++) {
-        res += String.fromCharCode((val.charCodeAt(i) + 64));
-    }
-
-    return res;
-};
